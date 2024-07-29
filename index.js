@@ -7,6 +7,7 @@ import cors from "cors";
 import compression from "compression";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
+import { errorMiddleware } from "./middleware/errorMw.js";
 
 const app = express();
 
@@ -33,7 +34,9 @@ mongoose
   .catch(() => {
     console.log("DB connection error");
   });
-
+// routes--
+// error middleware--
+app.use(errorMiddleware);
 // routes--
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
