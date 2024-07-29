@@ -51,3 +51,27 @@ export const signUpController = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 };
+
+export const signInController = async (req, res, next) => {
+  try {
+    // get data from the body
+    const { email, password } = req.body;
+    // check body data exists or not--
+    if (!email || !password) {
+      return next(new ErrorHandler("All fields are required", 400));
+    }
+    // check user exists or not--
+    const user = await User.findOne({ email });
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    // check password--
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return next(new ErrorHandler("Invalid credentials", 401));
+    }
+    sendJwtToken(user, res, "User logged in successfully", 200);
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};

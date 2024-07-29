@@ -14,7 +14,15 @@ const app = express();
 // Middleware--
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+const corsOptions = {
+  origin: config.CLIENT_URL,
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  // optionsSuccessStatus: 204,
+  optionsSuccessStatus: 200,
+  allowedHeaders: "Content-Type,Authorization",
+};
+app.use(cors(corsOptions));
 app.use(fileUpload());
 app.use(helmet());
 app.use(compression());
