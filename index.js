@@ -1,6 +1,5 @@
 import express from "express";
-import dotenv from "dotenv";
-dotenv.config();
+import config from "./utils/config.js";
 import mongoose from "mongoose";
 import helmet from "helmet";
 import cors from "cors";
@@ -8,6 +7,7 @@ import compression from "compression";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middleware/errorMw.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -27,7 +27,7 @@ process.on("uncaughtException", (err) => {
 
 // Connect to MongoDB--
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(config.MONGO_URI)
   .then(() => {
     console.log("DB connected successfully");
   })
@@ -35,10 +35,11 @@ mongoose
     console.log("DB connection error");
   });
 // routes--
+app.use("/api/v1/user", userRoutes);
 // error middleware--
 app.use(errorMiddleware);
 // routes--
-const port = process.env.PORT || 4000;
+const port = config.PORT || 4000;
 app.listen(port, () => {
   console.log(`Server running on port:${port}`);
 });
