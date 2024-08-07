@@ -75,3 +75,35 @@ export const deletePost = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 };
+
+// like unlike post--
+export const likeUnlikePost = async (req, res, next) => {
+  try {
+    const { id: postId } = req.body;
+    const userId = req.user._id;
+    // Find post--
+    const post = await Post.findById(postId);
+    if (!post) {
+      return next(new ErrorHandler("Post doest not exists", 404));
+    }
+    // Check if the user already liked or disliked the post--
+    const userLikedPost = post.likes.includes(userId);
+    if (userLikedPost) {
+      // unlike post--
+      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+      return res.status(200).json({
+        message: "Post unliked",
+        success: true,
+      });
+    } else {
+      // like post--
+      await Post.updateOne({ _id: postId }, { $push: { likes: userId } });
+      return res.status(200).json({
+        message: "Post liked",
+        success: true,
+      });
+    }
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
