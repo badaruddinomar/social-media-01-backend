@@ -8,6 +8,7 @@ import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middleware/errorMw.js";
 import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 
 const app = express();
 
@@ -44,6 +45,7 @@ mongoose
   });
 // routes--
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/post", postRoutes);
 // error middleware--
 app.use(errorMiddleware);
 // routes--
