@@ -90,3 +90,62 @@ export const logOutController = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error!", 500));
   }
 };
+
+export const updateUserProfile = async (req, res, next) => {
+  try {
+    // get user id--
+    const userId = req.user._id;
+    // find the user--
+    const user = await User.findById(userId);
+    // check user exists or not--
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    // update user data--
+    const { username, avatar, bio, prevPassword, newPassword } = req.body;
+    user.username = username ? username : user.username;
+    user.bio = bio ? bio : user.bio;
+    // compare previous password--
+    if (prevPassword) {
+      const isMatch = await bcrypt.compare(prevPassword, user.password);
+      if (!isMatch) {
+        return next(new ErrorHandler("Invalid previous password", 401));
+      }
+    }
+    // check new password length--
+    if (newPassword && newPassword.trim().length < 6) {
+      return next(
+        new ErrorHandler(
+          "New password must be at least 6 characters long!",
+          400
+        )
+      );
+    }
+    // Hash new password--
+    if (newPassword) {
+      var salt = bcrypt.genSaltSync(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      user.password = hashedPassword;
+    }
+
+    if (avatar) {
+      // first delete the previous image--
+      const imgId = user?.avatar?.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(imgId);
+      // upload the new image--
+      const cloudImage = await cloudinary.uploader.upload(avatar, {
+        resource_type: "image",
+        folder: "avatars",
+        width: 150,
+        crop: "scale",
+      });
+      user.avatar = cloudImage?.secure_url;
+    }
+    // save user data--
+    await user.save();
+    // send response to the user--
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
