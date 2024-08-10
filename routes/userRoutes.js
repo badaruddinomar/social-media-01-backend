@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  followUnfollowUser,
   getFollowers,
   getFollowingUser,
   getUser,
@@ -20,5 +21,6 @@ router.patch("/update", protectRoute, updateUserProfile);
 router.get("/profile", protectRoute, getUser);
 router.get("/followers", protectRoute, getFollowers);
 router.get("/following", protectRoute, getFollowingUser);
+router.get("/follow-unfollow", protectRoute, followUnfollowUser);
 
 export default router;

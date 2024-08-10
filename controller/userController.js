@@ -198,3 +198,33 @@ export const getFollowingUser = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 };
+
+export const followUnfollowUser = async (req, res, next) => {
+  try {
+    // get user id--
+    const userId = req.user._id;
+    const { followId } = req.body;
+    // find user--
+    const user = await User.findById(userId);
+    // check the user exists or not--
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    // check user followed or not--
+    const isFollowing = user.following.includes(followId);
+    if (isFollowing) {
+      // unfollow the user
+      user.following = user.following.filter(
+        (id) => id.toString() !== followId
+      );
+    } else {
+      // follow the user
+      user.following.push(followId);
+    }
+    await user.save();
+    // send the response to the user--
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
