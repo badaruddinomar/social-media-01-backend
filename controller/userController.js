@@ -149,3 +149,18 @@ export const updateUserProfile = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 };
+
+export const getUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    // check user exists or not--
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    // send response to the user--
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
