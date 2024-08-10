@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const postShcema = new mongoose.Schema(
   {
-    userId: {
+    authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
@@ -15,13 +15,13 @@ const postShcema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    replies: [
+    comments: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
-        text: String,
+        comment: String,
       },
     ],
   },

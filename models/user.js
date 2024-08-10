@@ -20,6 +20,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "https://i.stack.imgur.com/l60Hf.png", // Default avatar image
     },
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    bio: String,
+    isFrozen: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
