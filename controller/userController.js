@@ -164,3 +164,37 @@ export const getUser = async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 };
+
+export const getFollowers = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate("followers");
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    const followers = user.followers;
+    res.status(200).json({
+      success: true,
+      followers: followers,
+    });
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
+
+export const getFollowingUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate("following");
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    const following = user.following;
+    res.status(200).json({
+      success: true,
+      following: following,
+    });
+  } catch (err) {
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+};
